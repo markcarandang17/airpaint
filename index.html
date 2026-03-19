@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Air Paint Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="bg-orb orb-a"></div>
+  <div class="bg-orb orb-b"></div>
+
+  <main class="app-shell">
+    <section class="title-wrap">
+      <p class="kicker">Camera Drawing</p>
+      <h1>Air Paint Web Studio</h1>
+      <p class="subtitle">Raise index + middle finger to choose a tool. Raise only index finger to draw in the air.</p>
+    </section>
+
+    <section class="canvas-card">
+      <video id="inputVideo" playsinline></video>
+      <canvas id="outputCanvas" width="1280" height="720"></canvas>
+      <div class="hud" id="hudText">Initializing camera...</div>
+    </section>
+
+    <section class="panel">
+      <button class="control-btn" id="clearBtn">Clear Canvas</button>
+      <button class="control-btn secondary" id="downloadBtn">Download PNG</button>
+      <div class="legend">
+        <span class="dot pink"></span> Pink
+        <span class="dot blue"></span> Blue
+        <span class="dot green"></span> Green
+        <span class="dot red"></span> Red
+        <span class="dot eraser"></span> Eraser
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
