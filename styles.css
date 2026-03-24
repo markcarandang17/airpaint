@@ -5,6 +5,8 @@
   --text: #f9fcff;
   --muted: #b8c7da;
   --accent: #f15bb5;
+  --accent-2: #35b8ff;
+  --border: rgba(255, 255, 255, 0.16);
 }
 
 * {
@@ -50,17 +52,17 @@ body {
 }
 
 .app-shell {
-  width: min(1100px, 94vw);
-  margin: 30px auto;
+  width: min(1400px, 98vw);
+  margin: 14px auto;
   display: grid;
-  gap: 18px;
+  gap: 14px;
 }
 
 .title-wrap {
   background: linear-gradient(145deg, rgba(22, 33, 47, 0.82), rgba(34, 45, 63, 0.68));
   border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 18px;
-  padding: 18px 20px;
+  padding: 16px 18px;
   backdrop-filter: blur(10px);
   transform: translateY(10px);
   animation: rise 550ms ease forwards;
@@ -89,6 +91,7 @@ h1 {
 
 .canvas-card {
   position: relative;
+  min-height: 0;
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.22);
@@ -127,7 +130,7 @@ h1 {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
-  padding: 14px;
+  padding: 12px 14px;
   border-radius: 14px;
   background: rgba(13, 20, 29, 0.68);
   border: 1px solid rgba(255, 255, 255, 0.14);
@@ -166,6 +169,148 @@ h1 {
   flex-wrap: wrap;
 }
 
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.info-card {
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(14, 22, 32, 0.78), rgba(27, 37, 51, 0.7));
+  border: 1px solid var(--border);
+  box-shadow: 0 16px 32px rgba(18, 28, 40, 0.18);
+  transform: translateY(18px);
+  opacity: 0;
+  animation: rise 660ms ease forwards 220ms;
+}
+
+.card-kicker {
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: 0.76rem;
+  color: #ffc7a6;
+}
+
+.info-card h2 {
+  margin: 0 0 10px;
+  font-family: "Sora", sans-serif;
+  font-size: 1.18rem;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.chip-btn {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 9px 14px;
+  color: #eaf5ff;
+  background: rgba(255, 255, 255, 0.06);
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
+}
+
+.chip-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.chip-btn.active {
+  background: linear-gradient(145deg, rgba(241, 91, 181, 0.24), rgba(53, 184, 255, 0.2));
+  border-color: rgba(255, 255, 255, 0.42);
+  box-shadow: 0 8px 18px rgba(53, 184, 255, 0.12);
+}
+
+.meta-text {
+  margin: 12px 0 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.meter,
+.challenge-stats {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.meter {
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.challenge-card {
+  background:
+    radial-gradient(circle at top right, rgba(255, 153, 112, 0.18), transparent 32%),
+    linear-gradient(160deg, rgba(14, 22, 32, 0.82), rgba(27, 37, 51, 0.72));
+}
+
+.challenge-prompt {
+  margin: 0;
+  min-height: 56px;
+  color: #eef7ff;
+  line-height: 1.5;
+}
+
+.challenge-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.challenge-stats div {
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.stat-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #bfd0e5;
+}
+
+.challenge-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.cheat-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #dceaf8;
+  line-height: 1.45;
+  font-size: 0.92rem;
+}
+
+.gesture-pill {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 9px 12px;
+  border-radius: 999px;
+  background: rgba(8, 14, 22, 0.68);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fdf7d4;
+  font-size: 0.9rem;
+  backdrop-filter: blur(8px);
+}
+
 .dot {
   display: inline-block;
   width: 10px;
@@ -193,6 +338,10 @@ h1 {
 }
 
 @media (max-width: 780px) {
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
   .legend {
     margin-left: 0;
   }
@@ -203,5 +352,128 @@ h1 {
 
   .hud {
     font-size: 0.83rem;
+  }
+
+  .challenge-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .gesture-pill {
+    left: 14px;
+    right: auto;
+    max-width: calc(100% - 28px);
+  }
+}
+
+@media (min-width: 1180px) {
+  body {
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .app-shell {
+    width: min(1580px, calc(100vw - 20px));
+    height: calc(100vh - 20px);
+    margin: 10px auto;
+    grid-template-columns: minmax(0, 1.6fr) minmax(400px, 0.88fr);
+    grid-template-rows: auto auto minmax(0, 1fr);
+    grid-template-areas:
+      "title panel"
+      "canvas panel"
+      "canvas feature";
+    align-items: stretch;
+  }
+
+  .title-wrap {
+    grid-area: title;
+    padding: 14px 18px;
+  }
+
+  .canvas-card {
+    grid-area: canvas;
+    height: 100%;
+  }
+
+  #outputCanvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  .panel {
+    grid-area: panel;
+    align-content: start;
+    gap: 10px;
+  }
+
+  .legend {
+    margin-left: 0;
+    gap: 10px;
+    font-size: 0.84rem;
+  }
+
+  .feature-grid {
+    grid-area: feature;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    align-content: start;
+  }
+
+  .info-card {
+    padding: 14px;
+  }
+
+  .info-card h2 {
+    margin-bottom: 8px;
+    font-size: 1.03rem;
+  }
+
+  .card-kicker {
+    margin-bottom: 4px;
+  }
+
+  .chip-row {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .chip-btn {
+    padding: 8px 12px;
+    font-size: 0.83rem;
+  }
+
+  .meta-text {
+    margin-top: 10px;
+    font-size: 0.88rem;
+    line-height: 1.35;
+  }
+
+  .meter,
+  .challenge-stats div {
+    padding: 10px 12px;
+  }
+
+  .challenge-prompt {
+    min-height: 48px;
+    font-size: 0.92rem;
+    line-height: 1.35;
+  }
+
+  .challenge-stats {
+    gap: 8px;
+  }
+
+  .challenge-actions {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .cheat-list {
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+
+  .control-btn {
+    padding: 9px 12px;
+    font-size: 0.85rem;
   }
 }

@@ -17,17 +17,21 @@
     <section class="title-wrap">
       <p class="kicker">Camera Drawing</p>
       <h1>Air Paint Web Studio</h1>
-      <p class="subtitle">Raise index + middle finger to choose a tool. Raise only index finger to draw in the air.</p>
+      <p class="subtitle">Wave to create neon art, use pinch to resize your brush, and control the full demo with gestures only. No mouse needed.</p>
     </section>
 
     <section class="canvas-card">
       <video id="inputVideo" playsinline></video>
       <canvas id="outputCanvas" width="1280" height="720"></canvas>
+      <div class="gesture-pill" id="gestureBadge">Gesture: Waiting for hand...</div>
       <div class="hud" id="hudText">Initializing camera...</div>
     </section>
 
     <section class="panel">
       <button class="control-btn" id="clearBtn">Clear Canvas</button>
+      <button class="control-btn secondary" id="undoBtn">Undo</button>
+      <button class="control-btn secondary" id="redoBtn">Redo</button>
+      <button class="control-btn secondary" id="replayBtn">Replay</button>
       <button class="control-btn secondary" id="downloadBtn">Download PNG</button>
       <div class="legend">
         <span class="dot pink"></span> Pink
@@ -36,6 +40,73 @@
         <span class="dot red"></span> Red
         <span class="dot eraser"></span> Eraser
       </div>
+    </section>
+
+    <section class="feature-grid">
+      <article class="info-card">
+        <p class="card-kicker">Brush Lab</p>
+        <h2>Effects</h2>
+        <div class="chip-row" id="brushModeGroup">
+          <button class="chip-btn active" data-brush-mode="Neon">Neon</button>
+          <button class="chip-btn" data-brush-mode="Rainbow">Rainbow</button>
+          <button class="chip-btn" data-brush-mode="Sticker">Sticker</button>
+        </div>
+        <p class="meta-text">Pinch with thumb + index to resize the brush live.</p>
+        <div class="meter">
+          <span>Brush Size</span>
+          <strong id="sizeValue">10 px</strong>
+        </div>
+      </article>
+
+      <article class="info-card">
+        <p class="card-kicker">Scene Themes</p>
+        <h2>Backgrounds</h2>
+        <div class="chip-row" id="backgroundGroup">
+          <button class="chip-btn active" data-bg-mode="Camera">Camera</button>
+          <button class="chip-btn" data-bg-mode="Chalkboard">Chalkboard</button>
+          <button class="chip-btn" data-bg-mode="Neon Grid">Neon Grid</button>
+          <button class="chip-btn" data-bg-mode="Galaxy">Galaxy</button>
+        </div>
+        <p class="meta-text">Non-camera themes keep a live webcam preview in the corner.</p>
+      </article>
+
+      <article class="info-card challenge-card">
+        <p class="card-kicker">Challenge Mode</p>
+        <h2>Quick Draw</h2>
+        <p class="challenge-prompt" id="challengePrompt">Press Start Challenge to get a drawing mission for the class.</p>
+        <div class="challenge-stats">
+          <div>
+            <span class="stat-label">Timer</span>
+            <strong id="challengeTimer">--</strong>
+          </div>
+          <div>
+            <span class="stat-label">Score</span>
+            <strong id="challengeScore">0</strong>
+          </div>
+          <div>
+            <span class="stat-label">Round</span>
+            <strong id="challengeRound">0</strong>
+          </div>
+        </div>
+        <div class="challenge-actions">
+          <button class="control-btn" id="startChallengeBtn">Start Challenge</button>
+          <button class="control-btn secondary" id="nextChallengeBtn">Complete + Next</button>
+        </div>
+      </article>
+
+      <article class="info-card cheat-card">
+        <p class="card-kicker">Gesture Cheatsheet</p>
+        <h2>Live Controls</h2>
+        <ul class="cheat-list">
+          <li>Index + middle finger: hover over the top bar to pick a color or erase.</li>
+          <li>Index + middle finger over the gesture dock: switch brush mode, background, undo, redo, replay, or start challenges.</li>
+          <li>Index finger only: draw in the air.</li>
+          <li>Thumb + index pinch: resize your brush.</li>
+          <li>Open palm: hold to clear the whole canvas.</li>
+          <li>Thumbs up: hold to save a PNG snapshot.</li>
+          <li>Rock sign: hold to trigger the next challenge prompt.</li>
+        </ul>
+      </article>
     </section>
   </main>
 
