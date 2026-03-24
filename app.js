@@ -29,6 +29,8 @@ const ERASER_SIZE = 42;
 const PINCH_DISTANCE_PX = 48;
 const SHORTCUT_HOLD_MS = 900;
 const SHORTCUT_COOLDOWN_MS = 1200;
+const SELECTION_HOLD_MS = 320;
+const SELECTION_COOLDOWN_MS = 450;
 const CHALLENGE_DURATION_MS = 20000;
 
 const COLORS = {
@@ -137,6 +139,9 @@ const state = {
   ready: false,
   cameraLabel: "Webcam",
   gestureText: "Waiting for hand...",
+  selectionKey: "",
+  selectionStartedAt: 0,
+  lastSelectionAt: 0,
   shortcutKey: "",
   shortcutStartedAt: 0,
   lastShortcutAt: 0,
@@ -225,6 +230,11 @@ function resetShortcutTracking() {
   state.shortcutStartedAt = 0;
 }
 
+function resetSelectionTracking() {
+  state.selectionKey = "";
+  state.selectionStartedAt = 0;
+}
+
 function cloneStroke(stroke) {
   return {
     ...stroke,
@@ -289,33 +299,6 @@ function drawCameraImage(targetCtx, image, width, height, alpha = 1) {
   targetCtx.scale(-1, 1);
   targetCtx.drawImage(image, 0, 0, width, height);
   targetCtx.restore();
-}
-
-function drawCameraInset(targetCtx, image, width, height) {
-  if (!image) {
-    return;
-  }
-
-  const insetWidth = Math.min(width * 0.26, 280);
-  const insetHeight = insetWidth * 0.56;
-  const x = width - insetWidth - 22;
-  const y = height - insetHeight - 24;
-
-  targetCtx.fillStyle = "rgba(3, 8, 15, 0.72)";
-  targetCtx.fillRect(x - 8, y - 8, insetWidth + 16, insetHeight + 16);
-
-  targetCtx.save();
-  targetCtx.beginPath();
-  targetCtx.rect(x, y, insetWidth, insetHeight);
-  targetCtx.clip();
-  targetCtx.translate(x + insetWidth, y);
-  targetCtx.scale(-1, 1);
-  targetCtx.drawImage(image, 0, 0, insetWidth, insetHeight);
-  targetCtx.restore();
-
-  targetCtx.strokeStyle = "rgba(255, 255, 255, 0.66)";
-  targetCtx.lineWidth = 2;
-  targetCtx.strokeRect(x, y, insetWidth, insetHeight);
 }
 
 function drawChalkboardBackdrop(targetCtx, width, height) {
@@ -413,8 +396,6 @@ function drawBackground(targetCtx, width, height, image) {
   } else {
     drawGalaxyBackdrop(targetCtx, width, height);
   }
-
-  drawCameraInset(targetCtx, image, width, height);
 }
 
 function drawToolbar() {
@@ -509,66 +490,141 @@ function drawGestureDock() {
 }
 
 function applyGestureSelection(x, y) {
+  const target = getSelectionTarget(x, y, outputCanvas.width);
+  return applySelectionTarget(target);
+}
+
+function applySelectionTarget(target) {
+  if (!target) {
+    return "";
+  }
+
+  if (target.type === "tool") {
+    if (target.value === "Clear") {
+      clearAllArtwork();
+      return "Canvas cleared";
+    }
+
+    state.currentTool = target.value;
+    return `Tool ${target.label}`;
+  }
+
+  if (target.type === "brush") {
+    setBrushMode(target.value);
+    return `Brush ${target.label}`;
+  }
+
+  if (target.type === "background") {
+    setBackgroundMode(target.value);
+    return `Theme ${target.label}`;
+  }
+
+  if (target.type === "action") {
+    if (target.value === "Undo") {
+      undoStroke();
+      return "Undo";
+    }
+
+    if (target.value === "Redo") {
+      redoStroke();
+      return "Redo";
+    }
+
+    if (target.value === "Replay") {
+      replayDrawing();
+      return "Replay";
+    }
+
+    if (target.value === "Challenge") {
+      if (state.challenge.round === 0) {
+        startChallenge(true);
+        return "Challenge started";
+      }
+
+      completeChallengeAndNext();
+      return "Next challenge";
+    }
+  }
+
+  return "";
+}
+
+function getSelectionTarget(x, y, width) {
   if (y <= TOOLBAR_HEIGHT) {
     for (const button of toolbarButtons) {
       if (x > button.x1 && x < button.x2 && y > 10 && y < 60) {
-        if (button.color === "Clear") {
-          clearAllArtwork();
-          return "Canvas cleared";
-        }
-
-        state.currentTool = button.color;
-        return `Tool ${button.label}`;
+        return {
+          key: `tool:${button.color}`,
+          type: "tool",
+          value: button.color,
+          label: button.label
+        };
       }
     }
 
-    return "";
+    return null;
   }
 
   for (const zone of getBrushModeZones()) {
     if (isPointInZone(x, y, zone)) {
-      setBrushMode(zone.value);
-      return `Brush ${zone.label}`;
+      return {
+        key: `brush:${zone.value}`,
+        type: "brush",
+        value: zone.value,
+        label: zone.label
+      };
     }
   }
 
   for (const zone of getBackgroundZones()) {
     if (isPointInZone(x, y, zone)) {
-      setBackgroundMode(zone.value);
-      return `Theme ${zone.label}`;
+      return {
+        key: `background:${zone.value}`,
+        type: "background",
+        value: zone.value,
+        label: zone.label
+      };
     }
   }
 
-  for (const zone of getActionZones(outputCanvas.width)) {
+  for (const zone of getActionZones(width)) {
     if (isPointInZone(x, y, zone)) {
-      if (zone.value === "Undo") {
-        undoStroke();
-        return "Undo";
-      }
-
-      if (zone.value === "Redo") {
-        redoStroke();
-        return "Redo";
-      }
-
-      if (zone.value === "Replay") {
-        replayDrawing();
-        return "Replay";
-      }
-
-      if (zone.value === "Challenge") {
-        if (state.challenge.round === 0) {
-          startChallenge(true);
-          return "Challenge started";
-        }
-
-        completeChallengeAndNext();
-        return "Next challenge";
-      }
+      return {
+        key: `action:${zone.value}`,
+        type: "action",
+        value: zone.value,
+        label: zone.label
+      };
     }
   }
 
-  return "";
+  return null;
+}
+
+function handleSelectionGesture(target, now) {
+  if (!target) {
+    resetSelectionTracking();
+    return "Selection mode";
+  }
+
+  if (now - state.lastSelectionAt < SELECTION_COOLDOWN_MS) {
+    return `Hold ${target.label}`;
+  }
+
+  if (state.selectionKey !== target.key) {
+    state.selectionKey = target.key;
+    state.selectionStartedAt = now;
+  }
+
+  const progress = clamp((now - state.selectionStartedAt) / SELECTION_HOLD_MS, 0, 1);
+
+  if (progress < 1) {
+    return `Hold ${target.label} ${Math.round(progress * 100)}%`;
+  }
+
+  state.lastSelectionAt = now;
+  resetSelectionTracking();
+  return applySelectionTarget(target);
 }
 
 function getStrokeColor(stroke, segmentIndex) {
@@ -1116,6 +1172,7 @@ function renderFrame(results) {
   if (!hasHand) {
     endStroke();
     resetPointerTrack();
+    resetSelectionTracking();
     resetShortcutTracking();
     updateGestureBadge("Show your hand to start");
     drawStatus();
@@ -1144,15 +1201,20 @@ function renderFrame(results) {
     fingers[3] === 0 &&
     fingers[4] === 0 &&
     pinchDistance < PINCH_DISTANCE_PX;
+  const overSelectionUi = isPointInSelectionUi(indexTip.x, indexTip.y, width);
+  const selectionTarget = fingers[1] === 1 && fingers[2] === 1
+    ? getSelectionTarget(indexTip.x, indexTip.y, width)
+    : null;
   const selectionGesture =
     fingers[1] === 1 &&
     fingers[2] === 1 &&
-    isPointInSelectionUi(indexTip.x, indexTip.y, width);
-  const drawingGesture = fingers[1] === 1 && !pinchGesture && !selectionGesture;
+    overSelectionUi;
+  const drawingGesture = fingers[1] === 1 && !pinchGesture && !overSelectionUi;
 
   if (shortcutKey) {
     endStroke();
     resetPointerTrack();
+    resetSelectionTracking();
     handleShortcutGesture(shortcutKey, now);
     drawPointer(indexTip.x, indexTip.y);
     drawStatus();
@@ -1164,6 +1226,7 @@ function renderFrame(results) {
   if (pinchGesture) {
     endStroke();
     resetPointerTrack();
+    resetSelectionTracking();
 
     state.brushSize = clamp(pinchDistance * 0.26, MIN_BRUSH_SIZE, MAX_BRUSH_SIZE);
     updateBrushSizeLabel();
@@ -1184,7 +1247,7 @@ function renderFrame(results) {
   if (selectionGesture) {
     endStroke();
     resetPointerTrack();
-    const selectionResult = applyGestureSelection(indexTip.x, indexTip.y);
+    const selectionResult = handleSelectionGesture(selectionTarget, now);
     updateGestureBadge(selectionResult || "Selection mode");
 
     ctx.strokeStyle = state.currentTool === "Eraser" ? "#ffffff" : COLORS[state.currentTool];
@@ -1196,6 +1259,7 @@ function renderFrame(results) {
   }
 
   if (drawingGesture) {
+    resetSelectionTracking();
     updateGestureBadge(`${state.currentBrushMode} drawing`);
     drawPointer(indexTip.x, indexTip.y);
 
@@ -1220,6 +1284,7 @@ function renderFrame(results) {
 
   endStroke();
   resetPointerTrack();
+  resetSelectionTracking();
   updateGestureBadge("Gesture idle");
   drawStatus();
 }
