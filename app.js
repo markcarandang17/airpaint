@@ -125,7 +125,6 @@ const CHALLENGE_PROMPTS = [
 
 const shortcutLabels = {
   clear: "Open palm clears",
-  save: "Thumbs up saves",
   nextChallenge: "Rock sign next prompt"
 };
 
@@ -268,7 +267,6 @@ function toDisplayCoords(landmarks, width, height) {
 
 function getShortcutGestureKey(fingers) {
   const allRaised = fingers.every((value) => value === 1);
-  const thumbsUp = fingers[0] === 1 && fingers[1] === 0 && fingers[2] === 0 && fingers[3] === 0 && fingers[4] === 0;
   const rockSign = fingers[0] === 1 && fingers[1] === 1 && fingers[2] === 0 && fingers[3] === 0 && fingers[4] === 1;
 
   if (allRaised) {
@@ -1040,12 +1038,6 @@ function applyShortcut(shortcutKey) {
   if (shortcutKey === "clear") {
     clearAllArtwork();
     updateGestureBadge("Canvas cleared");
-    return;
-  }
-
-  if (shortcutKey === "save") {
-    downloadCurrentFrame();
-    updateGestureBadge("Snapshot saved");
     return;
   }
 
